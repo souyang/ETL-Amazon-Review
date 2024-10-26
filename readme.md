@@ -50,7 +50,7 @@ DAG (Directed Acyclic Graph) in Airflow is core structure defining a workflow, a
      echo -e "AIRFLOW_UID=$(id -u)" > .env
     ```
 5. Create first user account via below command
-```
+```sh
 docker compose up airflow-init
 ```
 
@@ -99,3 +99,8 @@ Variable: key = `amazon_book_search_term`, val: `<Your preferred term>`
 11. Run the job
 Go to `DAGs` Tab, in `Search DAGS`, search `fetch_and_store_amazon_books`
 Hit Icon for running the job
+
+12. (Optional) Clean up Environment
+```sh
+docker compose down --volumes --remove-orphansd
+```

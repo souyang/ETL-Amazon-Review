@@ -94,6 +94,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+      - ./init-airflow-db.sql:/docker-entrypoint-initdb.d/init-airflow-db.sql  # init script
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -249,6 +250,16 @@ services:
         mkdir -p /sources/logs /sources/dags /sources/plugins
         chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
         exec /entrypoint airflow version
+        # Create a new Airflow connection
+        airflow connections add 'books_connection' \
+          --conn-type 'postgres' \
+          --conn-host 'postgres' \
+          --conn-schema 'amazon_books' \
+          --conn-login 'airflow' \
+          --conn-password 'airflow' \
+          --conn-port '5432'
+        # Create Airflow variable on search term and set default value
+        airflow variables set 'amazon_book_search_term' 'machine learning'
     # yamllint enable rule:line-length
     environment:
       <<: *airflow-common-env
