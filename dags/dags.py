@@ -17,10 +17,10 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-# step 0: 
+# step 0: define db connection name
 db_connection = 'books_connection'
 
-# step 1: defin args for the airflow
+# step 1: define args for the airflow
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
