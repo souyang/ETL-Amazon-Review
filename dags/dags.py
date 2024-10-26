@@ -10,6 +10,7 @@
 import time
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.models import Variable
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -17,9 +18,9 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-# step 0: define db connection name
+# step 0: define db connection name and use AirFlow Variable
 db_connection = 'books_connection'
-
+search_term = Variable.get("amazon_book_search_term", default_var="machine learning interview")
 # step 1: define args for the airflow
 default_args = {
     'owner': 'airflow',
@@ -34,13 +35,13 @@ dag = DAG(
     'fetch_and_store_amazon_books',
     default_args=default_args,
     description='A simple DAG to fetch book data from Amazon and store it in Postgres',
-    schedule_interval=timedelta(days=1),
+    schedule=timedelta(days=1),
 )
 
 # step 3: Extract and Transform Amazon Book Data
 
 # extract amazon books from the website
-def extract_amazon_books(num_books):
+def extract_amazon_books(num_books, search_term):
     headers = {
     "Referer": 'https://www.amazon.com/',
     "Sec-Ch-Ua": "Not_Time",
@@ -48,7 +49,7 @@ def extract_amazon_books(num_books):
     "Sec-Ch-Ua-Platform": "macOS",
     'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
     }
-    base_url = "https://www.amazon.com/s?k=machine+learning+interview"
+    base_url = f"https://www.amazon.com/s?k={search_term.replace(' ', '+')}"
     books, seen_titles, page, consecutive_failures = [], set(), 1, 0
 
     while len(books) < num_books:
@@ -114,7 +115,7 @@ def extract_amazon_books(num_books):
 def get_amazon_data_books(num_books, ti):
     
     try:
-        books = extract_amazon_books(num_books)
+        books = extract_amazon_books(num_books, search_term)
         # Convert the list of dictionaries into a DataFrame
         df = pd.DataFrame(books)
         
