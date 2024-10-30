@@ -316,13 +316,5 @@ insert_book_data_task = SQLExecuteQueryOperator(
     dag=dag,
 )
 
-
-
-# insert_book_data_task = PythonOperator(
-#     task_id='insert_book_data',
-#     python_callable=insert_book_data_into_postgres,
-#     dag=dag,
-# )
-
 #dependencies
 create_table_task >>  create_partition_task >> fetch_book_data_task >> prepare_insert_query_task >> insert_book_data_task
