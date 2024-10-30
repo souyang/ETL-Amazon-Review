@@ -1,7 +1,7 @@
 # Airflow ETL Pipeline
 
 ### Project Summary
-Create an ETL pipline using Airflow as the scheduler grab book list from `https://www.amazon.com/s?k=machine+learning+interview` and store the unique book list to postgres database including price, author, price, rating
+Create an ETL pipeline using Airflow as the scheduler grab book list from `https://www.amazon.com/s?k=machine+learning+interview` and store the unique book list to postgres database including price, author, price, rating
 
 ## Tech Stack
 - Python3
