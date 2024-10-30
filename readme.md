@@ -58,49 +58,36 @@ docker compose up airflow-init
 ```sh
 docker compose up
 ```
-
-7. Get IP Address of the database
-Get IPAddress of Database
-### Unix OS
-```sh
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q --filter "ancestor=postgres:13")
-```
-### Windows OS
-```bat
-FOR /F "tokens=*" %%i IN ('docker ps -q --filter "ancestor=postgres:13"') DO (
-    docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" %%i
-)
-```
-8. Set data in pgAdmin Web UI
+1. Set data in pgAdmin Web UI
 - Open localhost:5050
 - Username: `admin@admin.com`, password `root`
 - Create server
 Go to General Tab: Name: `ps_db`
 - Set connection parameters
 Go to Connection Tab:
-Host name/address = <IP Address in step 7>
+Host name/address = `postgres`
 Port: 5432
 Username: `airflow`
 Password: `airflow`
 - create database called `amazon-books`
 
-9. Set DB Connection string in airflow
+1. Set DB Connection string in airflow
 Go to `Admin` Tab, add a new connection.
 Connection Id: `books_connection`
 Connection Type: `Postgres`
 Description: `Postgres Connection`
-Host: <IP Address in step 7>
+Host: `postgres`
 Database: `amazon-books`
 
-10. Set Variable in airflow
+1.  Set Variable in airflow
 Go to `Admin` Tab,  add a new variable
 Variable: key = `amazon_book_search_term`, val: `<Your preferred term>`
 
-11. Run the job
+1.  Run the job
 Go to `DAGs` Tab, in `Search DAGS`, search `fetch_and_store_amazon_books`
 Hit Icon for running the job
 
-12. (Optional) Clean up Environment
+1.  (Optional) Clean up Environment
 ```sh
 docker compose down --volumes --remove-orphansd
 ```
