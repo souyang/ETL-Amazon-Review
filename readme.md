@@ -30,18 +30,46 @@ DAG (Directed Acyclic Graph) in Airflow is core structure defining a workflow, a
    ```sh
    curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.2/docker-compose.yaml'
    ```
-3. Add below content on pg_admin so that we can create server and database
-   ```yml
-    services:  
-      pgadmin:
-      container_name: pgadmin4_container
-      image: dpage/pgadmin4
-      restart: always
-      environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-      ports:
-       - "5050:80"
+3. Create Environment variable files .env
+
+You can Run below command for grabbing env variable file
+```
+
+``` 
+
+copy below content
+```dosini
+# Common environment variables
+AIRFLOW_IMAGE_NAME=apache/airflow:2.10.2
+AIRFLOW_UID=501
+AIRFLOW_PROJ_DIR=.
+POSTGRES_USER=airflow
+POSTGRES_PASSWORD=airflow
+POSTGRES_DB=airflow
+
+# Airflow settings
+AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
+AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
+AIRFLOW__CORE__FERNET_KEY=
+AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
+AIRFLOW__CORE__LOAD_EXAMPLES=true
+AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
+AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK=true
+_AIRFLOW_WWW_USER_CREATE=true
+_AIRFLOW_WWW_USER_USERNAME=airflow
+_AIRFLOW_WWW_USER_PASSWORD=airflow
+_PIP_ADDITIONAL_REQUIREMENTS=
+
+# PgAdmin settings
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=root
+
+# Celery worker settings
+DUMB_INIT_SETSID=0
+CONNECTION_CHECK_MAX_COUNT=0
+
    ```
    
 4. Run below commands to set the right airflow user.

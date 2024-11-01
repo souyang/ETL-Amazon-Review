@@ -10,6 +10,7 @@
 import time
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.decorators import dags
 from airflow.models import Variable
 import requests
 import pandas as pd
@@ -19,8 +20,6 @@ import os
 import random
 
 from airflow.operators.python import PythonOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 # step 0: define db connection name and use AirFlow Variable
 db_connection = 'books_connection'
@@ -220,19 +219,6 @@ def get_amazon_data_books(num_books, ti):
         print(f"An unexpected error occurred: {e}")
 
 #4) create and store data in table on postgres (load)
-# def insert_book_data_into_postgres(ti):
-#     book_data = ti.xcom_pull(key='book_data', task_ids='fetch_book_data')
-#     if not book_data:
-#         print("No new books found.")
-#         return
-
-#     postgres_hook = PostgresHook(postgres_conn_id=db_connection)
-#     insert_query = """
-#     INSERT INTO books (title, authors, price, rating)
-#     VALUES (%s, %s, %s, %s)
-#     """
-#     for book in book_data:
-#         postgres_hook.run(insert_query, parameters=(book['Title'], book['Author'], book['Price'], book['Rating']))
 def prepare_insert_query(ti):
     book_data = ti.xcom_pull(key='book_data', task_ids='fetch_book_data')
     search_term = Variable.get("amazon_book_search_term")  # Fetch from Airflow Variable
